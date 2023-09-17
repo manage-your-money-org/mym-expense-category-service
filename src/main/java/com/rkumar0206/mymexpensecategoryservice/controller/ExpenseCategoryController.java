@@ -136,7 +136,7 @@ public class ExpenseCategoryController {
                 ExpenseCategoryResponse expenseCategory = expenseCategoryService.createExpenseCategory(expenseCategoryRequest);
 
                 response.setCode(HttpStatus.CREATED.value());
-                response.setMessage("Success");
+                response.setMessage(Constants.SUCCESS);
                 response.setBody(expenseCategory);
 
                 log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, "Category created successfully with key : " + expenseCategory.getKey()));
@@ -178,7 +178,7 @@ public class ExpenseCategoryController {
                 ExpenseCategoryResponse expenseCategory = expenseCategoryService.updateExpenseCategory(expenseCategoryRequest);
 
                 response.setCode(HttpStatus.OK.value());
-                response.setMessage("Success");
+                response.setMessage(Constants.SUCCESS);
                 response.setBody(expenseCategory);
 
                 log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, "Category with key : " + expenseCategory.getKey() + " updated successfully"));
