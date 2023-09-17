@@ -1,5 +1,7 @@
 package com.rkumar0206.mymexpensecategoryservice.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rkumar0206.mymexpensecategoryservice.model.request.ExpenseCategoryRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class ExpenseCategory {
 
     @Id
+    @JsonIgnore
     private String id;
 
     private String categoryName;
@@ -24,4 +27,12 @@ public class ExpenseCategory {
     private Long modified;
     private String uid;
     private String key;
+
+    public void updateExpenseCategoryFields(ExpenseCategoryRequest expenseCategoryRequest) {
+
+        this.setCategoryName(expenseCategoryRequest.getCategoryName());
+        this.setCategoryDescription(expenseCategoryRequest.getCategoryDescription());
+        this.setImageUrl(expenseCategoryRequest.getImageUrl());
+        this.modified = System.currentTimeMillis();
+    }
 }

@@ -1,6 +1,5 @@
 package com.rkumar0206.mymexpensecategoryservice.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rkumar0206.mymexpensecategoryservice.contanstsAndEnums.ErrorMessageConstants;
 import com.rkumar0206.mymexpensecategoryservice.domain.ExpenseCategory;
 import com.rkumar0206.mymexpensecategoryservice.exceptions.ExpenseCategoryException;
@@ -26,26 +25,33 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     private final UserContextService userContextService;
 
     @Override
-    public Page<ExpenseCategory> getExpenseCategoriesByUid(Pageable pageable, String uid) {
+    public Page<ExpenseCategory> getExpenseCategoriesByUid(Pageable pageable) {
 
-
-
-        return null;
+        return expenseCategoryRepository.findByUid(getUserInfo().getUid(), pageable);
     }
 
     @Override
-    public ExpenseCategory getExpenseCategoryByKey(String key) {
-        return null;
+    public ExpenseCategoryResponse getExpenseCategoryByKey(String key) {
+
+        String uid = getUserInfo().getUid();
+
+        ExpenseCategory expenseCategory = expenseCategoryRepository.findByKey(key)
+                .orElseThrow(() -> new ExpenseCategoryException(ErrorMessageConstants.NO_CATEGORY_FOUND_ERROR));
+
+        if (!expenseCategory.getUid().equals(uid)) {
+            throw new ExpenseCategoryException(ErrorMessageConstants.PERMISSION_DENIED);
+        }
+
+        return ModelMapper.buildExpenseCategoryResponse(expenseCategory);
     }
 
     @Override
-    public ExpenseCategoryResponse createExpenseCategory(ExpenseCategoryRequest expenseCategoryRequest) throws JsonProcessingException {
+    public ExpenseCategoryResponse createExpenseCategory(ExpenseCategoryRequest expenseCategoryRequest) {
 
-        UserInfo userInfo = getUserInfo();
+        String uid = getUserInfo().getUid();
 
         if (expenseCategoryRepository.findByCategoryNameAndUid(
-                expenseCategoryRequest.getCategoryName(),
-                userInfo.getUid()).isPresent()
+                expenseCategoryRequest.getCategoryName(), uid).isPresent()
         ) {
 
             log.error(ErrorMessageConstants.CATEGORY_NAME_ALREADY_PRESENT_ERROR);
@@ -59,8 +65,8 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
                 expenseCategoryRequest.getImageUrl(),
                 System.currentTimeMillis(),
                 System.currentTimeMillis(),
-                userInfo.getUid(),
-                getUserInfo().getUid().substring(0, 8) + "_" + UUID.randomUUID()
+                uid,
+                uid.substring(0, 8) + "_" + UUID.randomUUID()
         );
 
         return ModelMapper.buildExpenseCategoryResponse(expenseCategoryRepository.save(expenseCategory));
@@ -68,21 +74,59 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
     @Override
     public ExpenseCategoryResponse updateExpenseCategory(ExpenseCategoryRequest expenseCategoryRequest) {
-        return null;
+
+        String uid = getUserInfo().getUid();
+
+        ExpenseCategory expenseCategoryInDBByRequest = expenseCategoryRepository.findByKey(expenseCategoryRequest.getKey())
+                .orElseThrow(() -> new ExpenseCategoryException(ErrorMessageConstants.NO_CATEGORY_FOUND_ERROR));
+
+        if (!expenseCategoryInDBByRequest.getUid().equals(uid))
+            throw new ExpenseCategoryException(ErrorMessageConstants.PERMISSION_DENIED);
+
+        if (!expenseCategoryRequest.getCategoryName().equals(expenseCategoryInDBByRequest.getCategoryName())) {
+
+            if (expenseCategoryRepository.findByCategoryNameAndUid(
+                    expenseCategoryRequest.getCategoryName(), uid).isPresent()
+            ) {
+
+                log.error(ErrorMessageConstants.CATEGORY_NAME_ALREADY_PRESENT_ERROR);
+                throw new ExpenseCategoryException(ErrorMessageConstants.CATEGORY_NAME_ALREADY_PRESENT_ERROR);
+            }
+        }
+
+        expenseCategoryInDBByRequest.updateExpenseCategoryFields(expenseCategoryRequest);
+
+        return ModelMapper.buildExpenseCategoryResponse(expenseCategoryRepository.save(expenseCategoryInDBByRequest));
     }
 
     @Override
     public void deleteExpenseCategoryByKey(String key) {
 
+        String uid = getUserInfo().getUid();
+
+        ExpenseCategory expenseCategoryInDBByRequest = expenseCategoryRepository.findByKey(key)
+                .orElseThrow(() -> new ExpenseCategoryException(ErrorMessageConstants.NO_CATEGORY_FOUND_ERROR));
+
+        if (!expenseCategoryInDBByRequest.getUid().equals(uid))
+            throw new ExpenseCategoryException(ErrorMessageConstants.PERMISSION_DENIED);
+
+        expenseCategoryRepository.delete(expenseCategoryInDBByRequest);
     }
 
     @Override
     public void deleteAllExpenseCategory(String uid) {
 
+        // todo : delete all
     }
 
-    private UserInfo getUserInfo() throws JsonProcessingException {
+    private UserInfo getUserInfo() {
 
-        return userContextService.getUserInfo();
+        UserInfo userInfo = userContextService.getUserInfo();
+
+        if (userInfo == null) {
+            throw new RuntimeException(ErrorMessageConstants.USER_INFO_NOT_PROVIDED_ERROR);
+        }
+
+        return userInfo;
     }
 }

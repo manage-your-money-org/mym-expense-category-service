@@ -9,11 +9,11 @@ import org.springframework.data.domain.Pageable;
 
 public interface ExpenseCategoryService {
 
-    Page<ExpenseCategory> getExpenseCategoriesByUid(Pageable pageable, String uid);
+    Page<ExpenseCategory> getExpenseCategoriesByUid(Pageable pageable);
 
-    ExpenseCategory getExpenseCategoryByKey(String key);
+    ExpenseCategoryResponse getExpenseCategoryByKey(String key);
 
-    ExpenseCategoryResponse createExpenseCategory(ExpenseCategoryRequest expenseCategoryRequest) throws JsonProcessingException;
+    ExpenseCategoryResponse createExpenseCategory(ExpenseCategoryRequest expenseCategoryRequest);
 
     ExpenseCategoryResponse updateExpenseCategory(ExpenseCategoryRequest expenseCategoryRequest);
 

@@ -18,7 +18,7 @@ public class UserContextService {
     @Autowired
     private final HttpServletRequest request;
 
-    public UserInfo getUserInfo() throws JsonProcessingException {
+    public UserInfo getUserInfo() {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
@@ -32,6 +32,10 @@ public class UserContextService {
             throw new RuntimeException(ErrorMessageConstants.USER_INFO_NOT_PROVIDED_ERROR);
         }
 
-        return new ObjectMapper().readValue(tempUserInfo, UserInfo.class);
+        try {
+            return new ObjectMapper().readValue(tempUserInfo, UserInfo.class);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
     }
 }
