@@ -33,6 +33,6 @@ public class ExpenseCategory {
         this.setCategoryName(expenseCategoryRequest.getCategoryName());
         this.setCategoryDescription(expenseCategoryRequest.getCategoryDescription());
         this.setImageUrl(expenseCategoryRequest.getImageUrl());
-        this.modified = System.currentTimeMillis();
+        this.setModified(System.currentTimeMillis());
     }
 }

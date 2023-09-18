@@ -2,16 +2,14 @@ package com.rkumar0206.mymexpensecategoryservice.model.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rkumar0206.mymexpensecategoryservice.contanstsAndEnums.RequestAction;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.util.StringUtils;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class ExpenseCategoryRequest {
 
     private String categoryName;
