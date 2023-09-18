@@ -35,7 +35,7 @@ public class UserContextService {
         try {
             return new ObjectMapper().readValue(tempUserInfo, UserInfo.class);
         } catch (JsonProcessingException e) {
-            return null;
+            throw new RuntimeException(ErrorMessageConstants.USER_INFO_NOT_PROVIDED_ERROR);
         }
     }
 }

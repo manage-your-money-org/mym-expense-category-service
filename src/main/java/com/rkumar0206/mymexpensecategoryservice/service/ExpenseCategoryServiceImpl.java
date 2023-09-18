@@ -121,12 +121,6 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
     private UserInfo getUserInfo() {
 
-        UserInfo userInfo = userContextService.getUserInfo();
-
-        if (userInfo == null) {
-            throw new RuntimeException(ErrorMessageConstants.USER_INFO_NOT_PROVIDED_ERROR);
-        }
-
-        return userInfo;
+        return userContextService.getUserInfo();
     }
 }

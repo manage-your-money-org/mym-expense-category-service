@@ -326,17 +326,6 @@ class ExpenseCategoryServiceImplTest {
         verify(expenseCategoryRepository, times(0)).delete(tempExpenseCategory);
     }
 
-    @Test
-    void getUserInfo_UserInfoIsNull_ExceptionThrown() {
-
-        when(userContextService.getUserInfo()).thenReturn(null);
-
-        assertThatThrownBy(() -> expenseCategoryService.getExpenseCategoryByKey(tempExpenseCategory.getKey()))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage(ErrorMessageConstants.USER_INFO_NOT_PROVIDED_ERROR);
-
-    }
-
 
 //    @Test
 //    void deleteAllExpenseCategory() {
