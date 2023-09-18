@@ -9,4 +9,5 @@ public class ErrorMessageConstants {
     public static final String PERMISSION_DENIED = "Permission denied";
     public static final String INVALID_REQUEST_BODY = "Please send all the mandatory values for %s expense category";
     public static final String INVALID_EXPENSE_CATEGORY_KEY = "Expense category key is not valid";
+    public static final String MAX_PAGE_SIZE_ERROR = "Max page size should be less than or equal to %s";
 }

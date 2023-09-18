@@ -10,6 +10,7 @@ import com.rkumar0206.mymexpensecategoryservice.model.request.ExpenseCategoryReq
 import com.rkumar0206.mymexpensecategoryservice.model.response.CustomResponse;
 import com.rkumar0206.mymexpensecategoryservice.model.response.ExpenseCategoryResponse;
 import com.rkumar0206.mymexpensecategoryservice.service.ExpenseCategoryService;
+import com.rkumar0206.mymexpensecategoryservice.utility.MymStringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -97,7 +98,7 @@ public class ExpenseCategoryController {
 
         try {
             if (thePageable.getPageSize() > maxPageSizeAllowed)
-                throw new ExpenseCategoryException("Max page size should be less than or equal to " + maxPageSizeAllowed);
+                throw new ExpenseCategoryException(String.format(ErrorMessageConstants.MAX_PAGE_SIZE_ERROR, maxPageSizeAllowed));
 
 
             Page<ExpenseCategory> expenseCategories = expenseCategoryService
@@ -149,6 +150,9 @@ public class ExpenseCategoryController {
                         response.setCode(HttpStatus.CONFLICT.value());
                     else
                         response.setCode(HttpStatus.BAD_REQUEST.value());
+                } else {
+
+                    response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 }
 
                 response.setMessage(String.format(Constants.FAILED_, e.getMessage()));
@@ -193,6 +197,9 @@ public class ExpenseCategoryController {
                         response.setCode(HttpStatus.BAD_REQUEST.value());
 
                     log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, e.getMessage()));
+                } else {
+
+                    response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 }
 
                 response.setMessage(String.format(Constants.FAILED_, e.getMessage()));
@@ -215,14 +222,14 @@ public class ExpenseCategoryController {
         CustomResponse<String> response = new CustomResponse<>();
 
         try {
-            if (null == key || !StringUtils.hasLength(key.trim())) {
+            if (!MymStringUtil.isValid(key)) {
                 throw new ExpenseCategoryException(ErrorMessageConstants.INVALID_EXPENSE_CATEGORY_KEY);
             }
 
             expenseCategoryService.deleteExpenseCategoryByKey(key);
 
             response.setCode(HttpStatus.NO_CONTENT.value());
-            log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, "Category with key " + key +" deleted successfully"));
+            log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, "Category with key " + key + " deleted successfully"));
         } catch (Exception e) {
 
             if (e instanceof ExpenseCategoryException) {
