@@ -9,6 +9,8 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
+
 @Document(collection = "ExpenseCategory")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,8 +25,8 @@ public class ExpenseCategory {
     private String categoryName;
     private String categoryDescription;
     private String imageUrl;
-    private Long created;
-    private Long modified;
+    private Date created;
+    private Date modified;
     private String uid;
     private String key;
 
@@ -33,6 +35,6 @@ public class ExpenseCategory {
         this.setCategoryName(expenseCategoryRequest.getCategoryName());
         this.setCategoryDescription(expenseCategoryRequest.getCategoryDescription());
         this.setImageUrl(expenseCategoryRequest.getImageUrl());
-        this.setModified(System.currentTimeMillis());
+        this.setModified(new Date(System.currentTimeMillis()));
     }
 }

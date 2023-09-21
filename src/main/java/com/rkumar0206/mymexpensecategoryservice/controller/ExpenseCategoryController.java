@@ -51,7 +51,7 @@ public class ExpenseCategoryController {
 
             ExpenseCategoryResponse expenseCategory = expenseCategoryService.getExpenseCategoryByKey(key);
 
-            response.setCode(HttpStatus.OK.value());
+            response.setStatus(HttpStatus.OK.value());
             response.setMessage(Constants.SUCCESS);
             response.setBody(expenseCategory);
 
@@ -61,14 +61,14 @@ public class ExpenseCategoryController {
 
                 switch (e.getMessage()) {
 
-                    case ErrorMessageConstants.PERMISSION_DENIED -> response.setCode(HttpStatus.FORBIDDEN.value());
+                    case ErrorMessageConstants.PERMISSION_DENIED -> response.setStatus(HttpStatus.FORBIDDEN.value());
                     case ErrorMessageConstants.INVALID_EXPENSE_CATEGORY_KEY ->
-                            response.setCode(HttpStatus.BAD_REQUEST.value());
+                            response.setStatus(HttpStatus.BAD_REQUEST.value());
                     case ErrorMessageConstants.NO_CATEGORY_FOUND_ERROR ->
-                            response.setCode(HttpStatus.NO_CONTENT.value());
+                            response.setStatus(HttpStatus.NO_CONTENT.value());
                 }
             } else {
-                response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
 
             response.setMessage(e.getMessage());
@@ -76,7 +76,7 @@ public class ExpenseCategoryController {
             log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, e.getMessage()));
         }
 
-        return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getCode()));
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
     }
 
     @GetMapping
@@ -104,22 +104,22 @@ public class ExpenseCategoryController {
             Page<ExpenseCategory> expenseCategories = expenseCategoryService
                     .getExpenseCategoriesByUid(thePageable);
 
-            response.setCode(HttpStatus.OK.value());
+            response.setStatus(HttpStatus.OK.value());
             response.setMessage("Success");
             response.setBody(expenseCategories);
 
         } catch (Exception e) {
 
             if (e instanceof ExpenseCategoryException)
-                response.setCode(HttpStatus.BAD_REQUEST.value());
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
             else
-                response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
             response.setMessage(String.format(Constants.FAILED_, e.getMessage()));
             log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, e.getMessage()));
         }
 
-        return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getCode()));
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
     }
 
     @PostMapping("/new/create")
@@ -136,7 +136,7 @@ public class ExpenseCategoryController {
 
                 ExpenseCategoryResponse expenseCategory = expenseCategoryService.createExpenseCategory(expenseCategoryRequest);
 
-                response.setCode(HttpStatus.CREATED.value());
+                response.setStatus(HttpStatus.CREATED.value());
                 response.setMessage(Constants.SUCCESS);
                 response.setBody(expenseCategory);
 
@@ -147,12 +147,12 @@ public class ExpenseCategoryController {
                 if (e instanceof ExpenseCategoryException) {
 
                     if (e.getMessage().contains(ErrorMessageConstants.CATEGORY_NAME_ALREADY_PRESENT_ERROR))
-                        response.setCode(HttpStatus.CONFLICT.value());
+                        response.setStatus(HttpStatus.CONFLICT.value());
                     else
-                        response.setCode(HttpStatus.BAD_REQUEST.value());
+                        response.setStatus(HttpStatus.BAD_REQUEST.value());
                 } else {
 
-                    response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 }
 
                 response.setMessage(String.format(Constants.FAILED_, e.getMessage()));
@@ -160,11 +160,11 @@ public class ExpenseCategoryController {
             }
         } else {
 
-            response.setCode(HttpStatus.BAD_REQUEST.value());
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
             response.setMessage(String.format(Constants.FAILED_, String.format(ErrorMessageConstants.INVALID_REQUEST_BODY, "creating")));
         }
 
-        return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getCode()));
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
     }
 
     @PutMapping("/update")
@@ -181,7 +181,7 @@ public class ExpenseCategoryController {
 
                 ExpenseCategoryResponse expenseCategory = expenseCategoryService.updateExpenseCategory(expenseCategoryRequest);
 
-                response.setCode(HttpStatus.OK.value());
+                response.setStatus(HttpStatus.OK.value());
                 response.setMessage(Constants.SUCCESS);
                 response.setBody(expenseCategory);
 
@@ -192,25 +192,25 @@ public class ExpenseCategoryController {
                 if (e instanceof ExpenseCategoryException) {
 
                     if (e.getMessage().contains(ErrorMessageConstants.CATEGORY_NAME_ALREADY_PRESENT_ERROR))
-                        response.setCode(HttpStatus.CONFLICT.value());
+                        response.setStatus(HttpStatus.CONFLICT.value());
                     else
-                        response.setCode(HttpStatus.BAD_REQUEST.value());
+                        response.setStatus(HttpStatus.BAD_REQUEST.value());
 
                     log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, e.getMessage()));
                 } else {
 
-                    response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 }
 
                 response.setMessage(String.format(Constants.FAILED_, e.getMessage()));
             }
         } else {
 
-            response.setCode(HttpStatus.BAD_REQUEST.value());
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
             response.setMessage(String.format(Constants.FAILED_, String.format(ErrorMessageConstants.INVALID_REQUEST_BODY, "updating")));
         }
 
-        return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getCode()));
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
     }
 
     @DeleteMapping("/key")
@@ -228,7 +228,7 @@ public class ExpenseCategoryController {
 
             expenseCategoryService.deleteExpenseCategoryByKey(key);
 
-            response.setCode(HttpStatus.NO_CONTENT.value());
+            response.setStatus(HttpStatus.NO_CONTENT.value());
             log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, "Category with key " + key + " deleted successfully"));
         } catch (Exception e) {
 
@@ -236,21 +236,21 @@ public class ExpenseCategoryController {
 
                 switch (e.getMessage()) {
 
-                    case ErrorMessageConstants.PERMISSION_DENIED -> response.setCode(HttpStatus.FORBIDDEN.value());
+                    case ErrorMessageConstants.PERMISSION_DENIED -> response.setStatus(HttpStatus.FORBIDDEN.value());
                     case ErrorMessageConstants.INVALID_EXPENSE_CATEGORY_KEY ->
-                            response.setCode(HttpStatus.BAD_REQUEST.value());
+                            response.setStatus(HttpStatus.BAD_REQUEST.value());
                     case ErrorMessageConstants.NO_CATEGORY_FOUND_ERROR ->
-                            response.setCode(HttpStatus.NO_CONTENT.value());
+                            response.setStatus(HttpStatus.NO_CONTENT.value());
                 }
             } else {
-                response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
 
             response.setMessage(e.getMessage());
             log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, e.getMessage()));
         }
 
-        return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getCode()));
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
     }
 
 }

@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,8 +54,8 @@ class ExpenseCategoryControllerTest {
                 "Temp Expense category",
                 "temp expense category description",
                 "",
-                6862868727L,
-                6862868727L,
+                new Date(System.currentTimeMillis()),
+                new Date(System.currentTimeMillis()),
                 UUID.randomUUID().toString(),
                 "rrrrr_jkfdbvjhsbjhsbjhsbjhb"
 
@@ -190,8 +191,8 @@ class ExpenseCategoryControllerTest {
                 request.getCategoryName(),
                 request.getCategoryDescription(),
                 request.getImageUrl(),
-                System.currentTimeMillis(),
-                System.currentTimeMillis(),
+                new Date(System.currentTimeMillis()),
+                new Date(System.currentTimeMillis()),
                 "rrrrrr_askncbkjsbkabk",
                 UUID.randomUUID().toString()
         );
@@ -305,8 +306,8 @@ class ExpenseCategoryControllerTest {
                 request.getCategoryName(),
                 request.getCategoryDescription(),
                 request.getImageUrl(),
-                System.currentTimeMillis(),
-                System.currentTimeMillis(),
+                new Date(System.currentTimeMillis()),
+                new Date(System.currentTimeMillis()),
                 "rrrrrr_askncbkjsbkabk",
                 key
         );

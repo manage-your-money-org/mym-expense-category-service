@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -53,8 +54,8 @@ class ExpenseCategoryServiceImplTest {
                 "Temp Expense category",
                 "temp expense category description",
                 "",
-                6862868727L,
-                6862868727L,
+                new Date(System.currentTimeMillis()),
+                new Date(System.currentTimeMillis()),
                 uid,
                 "rrrrr_jkfdbvjhsbjhsbjhsbjhb"
 
@@ -206,8 +207,8 @@ class ExpenseCategoryServiceImplTest {
         when(expenseCategoryRepository.save(any())).thenReturn(tempExpenseCategory);
         //------------------
 
-        Long oldCreatedValue = tempExpenseCategory.getCreated();
-        Long oldModifiedValue = tempExpenseCategory.getModified();
+        Date oldCreatedValue = tempExpenseCategory.getCreated();
+        Date oldModifiedValue = tempExpenseCategory.getModified();
         String oldKeyValue = tempExpenseCategory.getKey();
 
         expenseCategoryService.updateExpenseCategory(expenseCategoryRequest);

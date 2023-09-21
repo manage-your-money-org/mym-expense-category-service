@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Service
@@ -63,8 +64,8 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
                 expenseCategoryRequest.getCategoryName(),
                 expenseCategoryRequest.getCategoryDescription(),
                 expenseCategoryRequest.getImageUrl(),
-                System.currentTimeMillis(),
-                System.currentTimeMillis(),
+                new Date(System.currentTimeMillis()),
+                new Date(System.currentTimeMillis()),
                 uid,
                 uid.substring(0, 8) + "_" + UUID.randomUUID()
         );
