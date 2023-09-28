@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rkumar0206.mymexpensecategoryservice.contanstsAndEnums.Constants;
 import com.rkumar0206.mymexpensecategoryservice.contanstsAndEnums.ErrorMessageConstants;
 import com.rkumar0206.mymexpensecategoryservice.model.UserInfo;
+import com.rkumar0206.mymexpensecategoryservice.utility.MymUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class UserContextService {
     @Autowired
     private final HttpServletRequest request;
 
-    public UserInfo getUserInfo() throws JsonProcessingException {
+    public UserInfo getUserInfo() {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
@@ -32,6 +33,21 @@ public class UserContextService {
             throw new RuntimeException(ErrorMessageConstants.USER_INFO_NOT_PROVIDED_ERROR);
         }
 
-        return new ObjectMapper().readValue(tempUserInfo, UserInfo.class);
+        try {
+            UserInfo userInfo = new ObjectMapper().readValue(tempUserInfo, UserInfo.class);
+
+            if (MymUtil.isNotValid(userInfo.getUid())
+                    || MymUtil.isNotValid(userInfo.getName())
+                    || MymUtil.isNotValid(userInfo.getEmailId())
+                    || !userInfo.isAccountVerified()) {
+
+                throw new RuntimeException(ErrorMessageConstants.USER_INFO_NOT_PROPER);
+            }
+
+            return userInfo;
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(ErrorMessageConstants.USER_INFO_NOT_PROPER);
+        }
     }
 }

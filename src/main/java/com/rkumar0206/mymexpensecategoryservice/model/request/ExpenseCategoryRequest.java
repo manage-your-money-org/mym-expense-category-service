@@ -1,25 +1,34 @@
 package com.rkumar0206.mymexpensecategoryservice.model.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.util.StringUtils;
+import com.rkumar0206.mymexpensecategoryservice.contanstsAndEnums.RequestAction;
+import com.rkumar0206.mymexpensecategoryservice.utility.MymUtil;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class ExpenseCategoryRequest {
 
     private String categoryName;
     private String categoryDescription;
     private String imageUrl;
+    private String key;
 
     @JsonIgnore
-    public boolean isValid() {
+    public boolean isValid(RequestAction action) {
 
-        return StringUtils.hasLength(categoryName.trim());
+        boolean isValid = MymUtil.isValid(categoryName)
+                && (action == RequestAction.ADD || action == RequestAction.UPDATE);
+
+        if (isValid && action == RequestAction.UPDATE) {
+
+            // key is mandatory for updating any category
+            isValid = MymUtil.isValid(key);
+        }
+
+        return isValid;
     }
 }

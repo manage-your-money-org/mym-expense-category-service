@@ -22,3 +22,6 @@ eureka:
 server:
   port: 8973
 
+pagination:
+  maxPageSizeAllowed: 200
+  defaultPageSize: 50
