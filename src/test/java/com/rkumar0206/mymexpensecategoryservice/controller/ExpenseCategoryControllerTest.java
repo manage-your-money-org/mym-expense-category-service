@@ -84,7 +84,7 @@ class ExpenseCategoryControllerTest {
                 expenseCategoryController.getExpenseCategoryByKey(UUID.randomUUID().toString(), null);
 
         assertEquals(HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()), actual.getStatusCode());
-        assertEquals(ErrorMessageConstants.INVALID_EXPENSE_CATEGORY_KEY, actual.getBody().getMessage());
+        assertThat(actual.getBody().getMessage(), containsString(ErrorMessageConstants.INVALID_EXPENSE_CATEGORY_KEY));
 
     }
 
@@ -98,7 +98,7 @@ class ExpenseCategoryControllerTest {
                 expenseCategoryController.getExpenseCategoryByKey(UUID.randomUUID().toString(), tempExpenseCategory.getKey());
 
         assertEquals(HttpStatusCode.valueOf(HttpStatus.FORBIDDEN.value()), actual.getStatusCode());
-        assertEquals(ErrorMessageConstants.PERMISSION_DENIED, actual.getBody().getMessage());
+        assertThat(actual.getBody().getMessage(), containsString(ErrorMessageConstants.PERMISSION_DENIED));
 
     }
 
@@ -112,7 +112,7 @@ class ExpenseCategoryControllerTest {
                 expenseCategoryController.getExpenseCategoryByKey(UUID.randomUUID().toString(), tempExpenseCategory.getKey());
 
         assertEquals(HttpStatusCode.valueOf(HttpStatus.NO_CONTENT.value()), actual.getStatusCode());
-        assertEquals(ErrorMessageConstants.NO_CATEGORY_FOUND_ERROR, actual.getBody().getMessage());
+        assertThat(actual.getBody().getMessage(), containsString(ErrorMessageConstants.NO_CATEGORY_FOUND_ERROR));
 
     }
 
@@ -126,7 +126,7 @@ class ExpenseCategoryControllerTest {
                 expenseCategoryController.getExpenseCategoryByKey(UUID.randomUUID().toString(), tempExpenseCategory.getKey());
 
         assertEquals(HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), actual.getStatusCode());
-        assertEquals("Some error", actual.getBody().getMessage());
+        assertThat(actual.getBody().getMessage(), containsString("Some error"));
 
     }
 
@@ -242,13 +242,13 @@ class ExpenseCategoryControllerTest {
         );
 
         when(expenseCategoryService.createExpenseCategory(request))
-                .thenThrow(new RuntimeException(ErrorMessageConstants.USER_NOT_AUTHORIZED_ERROR));
+                .thenThrow(new RuntimeException("Some Error"));
 
         ResponseEntity<CustomResponse<ExpenseCategoryResponse>> actual =
                 expenseCategoryController.createNewExpenseCategory(UUID.randomUUID().toString(), request);
 
         assertEquals(HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), actual.getStatusCode());
-        assertThat(actual.getBody().getMessage(), containsString(ErrorMessageConstants.USER_NOT_AUTHORIZED_ERROR));
+        assertThat(actual.getBody().getMessage(), containsString("Some Error"));
 
     }
 
@@ -263,13 +263,13 @@ class ExpenseCategoryControllerTest {
         );
 
         when(expenseCategoryService.createExpenseCategory(request))
-                .thenThrow(new ExpenseCategoryException(ErrorMessageConstants.INVALID_REQUEST_BODY));
+                .thenThrow(new ExpenseCategoryException(ErrorMessageConstants.INVALID_REQUEST_BODY_CREATE));
 
         ResponseEntity<CustomResponse<ExpenseCategoryResponse>> actual =
                 expenseCategoryController.createNewExpenseCategory(UUID.randomUUID().toString(), request);
 
         assertEquals(HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()), actual.getStatusCode());
-        assertThat(actual.getBody().getMessage(), containsString(ErrorMessageConstants.INVALID_REQUEST_BODY));
+        assertThat(actual.getBody().getMessage(), containsString(ErrorMessageConstants.INVALID_REQUEST_BODY_CREATE));
     }
 
     @Test
@@ -286,7 +286,7 @@ class ExpenseCategoryControllerTest {
                 expenseCategoryController.createNewExpenseCategory(UUID.randomUUID().toString(), request);
 
         assertEquals(HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()), actual.getStatusCode());
-        assertThat(actual.getBody().getMessage(), containsString(String.format(ErrorMessageConstants.INVALID_REQUEST_BODY, "creating")));
+        assertThat(actual.getBody().getMessage(), containsString(ErrorMessageConstants.INVALID_REQUEST_BODY_CREATE));
     }
 
 
@@ -341,7 +341,7 @@ class ExpenseCategoryControllerTest {
                 expenseCategoryController.updateExpenseCategory(UUID.randomUUID().toString(), request);
 
         assertEquals(HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()), actual.getStatusCode());
-        assertThat(actual.getBody().getMessage(), containsString(String.format(ErrorMessageConstants.INVALID_REQUEST_BODY, "updating")));
+        assertThat(actual.getBody().getMessage(), containsString(ErrorMessageConstants.INVALID_REQUEST_BODY_UPDATE));
     }
 
     @Test
@@ -376,13 +376,13 @@ class ExpenseCategoryControllerTest {
         );
 
         when(expenseCategoryService.updateExpenseCategory(request))
-                .thenThrow(new RuntimeException(ErrorMessageConstants.USER_NOT_AUTHORIZED_ERROR));
+                .thenThrow(new RuntimeException("Some exception"));
 
         ResponseEntity<CustomResponse<ExpenseCategoryResponse>> actual =
                 expenseCategoryController.updateExpenseCategory(UUID.randomUUID().toString(), request);
 
         assertEquals(HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), actual.getStatusCode());
-        assertThat(actual.getBody().getMessage(), containsString(ErrorMessageConstants.USER_NOT_AUTHORIZED_ERROR));
+        assertThat(actual.getBody().getMessage(), containsString("Some exception"));
 
     }
 
@@ -397,13 +397,13 @@ class ExpenseCategoryControllerTest {
         );
 
         when(expenseCategoryService.updateExpenseCategory(request))
-                .thenThrow(new ExpenseCategoryException(ErrorMessageConstants.INVALID_REQUEST_BODY));
+                .thenThrow(new ExpenseCategoryException(ErrorMessageConstants.INVALID_REQUEST_BODY_UPDATE));
 
         ResponseEntity<CustomResponse<ExpenseCategoryResponse>> actual =
                 expenseCategoryController.updateExpenseCategory(UUID.randomUUID().toString(), request);
 
         assertEquals(HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()), actual.getStatusCode());
-        assertThat(actual.getBody().getMessage(), containsString(ErrorMessageConstants.INVALID_REQUEST_BODY));
+        assertThat(actual.getBody().getMessage(), containsString(ErrorMessageConstants.INVALID_REQUEST_BODY_UPDATE));
     }
 
     @Test
@@ -456,14 +456,14 @@ class ExpenseCategoryControllerTest {
     @Test
     void deleteExpenseCategory_AnyOtherException_INTERNAL_SERVER_ERROR_RESPONSE() {
 
-        doThrow(new RuntimeException(ErrorMessageConstants.USER_INFO_NOT_PROVIDED_ERROR))
+        doThrow(new RuntimeException("Some Error"))
                 .when(expenseCategoryService).deleteExpenseCategoryByKey(anyString());
 
         ResponseEntity<CustomResponse<String>> actual =
                 expenseCategoryController.deleteExpenseCategory(UUID.randomUUID().toString(), tempExpenseCategory.getKey());
 
         assertEquals(HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), actual.getStatusCode());
-        assertThat(actual.getBody().getMessage(), containsString(ErrorMessageConstants.USER_INFO_NOT_PROVIDED_ERROR));
+        assertThat(actual.getBody().getMessage(), containsString("Some Error"));
     }
 
 

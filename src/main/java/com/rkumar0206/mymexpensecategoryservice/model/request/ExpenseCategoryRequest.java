@@ -2,7 +2,7 @@ package com.rkumar0206.mymexpensecategoryservice.model.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rkumar0206.mymexpensecategoryservice.contanstsAndEnums.RequestAction;
-import com.rkumar0206.mymexpensecategoryservice.utility.MymStringUtil;
+import com.rkumar0206.mymexpensecategoryservice.utility.MymUtil;
 import lombok.*;
 
 @AllArgsConstructor
@@ -20,13 +20,13 @@ public class ExpenseCategoryRequest {
     @JsonIgnore
     public boolean isValid(RequestAction action) {
 
-        boolean isValid = MymStringUtil.isValid(categoryName)
+        boolean isValid = MymUtil.isValid(categoryName)
                 && (action == RequestAction.ADD || action == RequestAction.UPDATE);
 
         if (isValid && action == RequestAction.UPDATE) {
 
             // key is mandatory for updating any category
-            isValid = MymStringUtil.isValid(key);
+            isValid = MymUtil.isValid(key);
         }
 
         return isValid;

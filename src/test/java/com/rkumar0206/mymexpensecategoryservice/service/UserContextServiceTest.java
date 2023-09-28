@@ -39,6 +39,19 @@ class UserContextServiceTest {
     }
 
     @Test
+    void getUserInfo_NoAuthHeaderPassed_ExceptionThrown() {
+
+        when(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION))
+                .thenReturn(null);
+
+        assertThatThrownBy(() -> userContextService.getUserInfo())
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage(ErrorMessageConstants.USER_NOT_AUTHORIZED_ERROR);
+
+    }
+
+
+    @Test
     void getUserInfo_Success() throws JsonProcessingException {
 
         UserInfo userInfo = new UserInfo(
@@ -73,6 +86,26 @@ class UserContextServiceTest {
     }
 
     @Test
+    void getUserInfo_PartialInfoPassed_ExceptionThrown() throws JsonProcessingException {
+
+        UserInfo userInfo = new UserInfo(
+                "",
+                "",
+                UUID.randomUUID().toString(),
+                true
+        );
+
+        when(httpServletRequest.getHeader(Constants.USER_INFO_HEADER_NAME))
+                .thenReturn(new ObjectMapper().writeValueAsString(userInfo));
+
+        assertThatThrownBy(() -> userContextService.getUserInfo())
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage(ErrorMessageConstants.USER_INFO_NOT_PROPER);
+
+    }
+
+
+    @Test
     void getUserInfo_JsonParsingExceptionOccurred_ExceptionThrown() {
 
         when(httpServletRequest.getHeader(Constants.USER_INFO_HEADER_NAME))
@@ -80,7 +113,8 @@ class UserContextServiceTest {
 
         assertThatThrownBy(() -> userContextService.getUserInfo())
                 .isInstanceOf(RuntimeException.class)
-                .hasMessage(ErrorMessageConstants.USER_INFO_NOT_PROVIDED_ERROR);
+                .hasMessage(ErrorMessageConstants.USER_INFO_NOT_PROPER);
 
     }
+
 }

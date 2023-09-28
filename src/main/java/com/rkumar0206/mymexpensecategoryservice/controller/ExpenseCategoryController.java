@@ -10,7 +10,7 @@ import com.rkumar0206.mymexpensecategoryservice.model.request.ExpenseCategoryReq
 import com.rkumar0206.mymexpensecategoryservice.model.response.CustomResponse;
 import com.rkumar0206.mymexpensecategoryservice.model.response.ExpenseCategoryResponse;
 import com.rkumar0206.mymexpensecategoryservice.service.ExpenseCategoryService;
-import com.rkumar0206.mymexpensecategoryservice.utility.MymStringUtil;
+import com.rkumar0206.mymexpensecategoryservice.utility.MymUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,25 +55,10 @@ public class ExpenseCategoryController {
             response.setMessage(Constants.SUCCESS);
             response.setBody(expenseCategory);
 
-        } catch (Exception e) {
+        } catch (Exception ex) {
 
-            if (e instanceof ExpenseCategoryException) {
-
-                switch (e.getMessage()) {
-
-                    case ErrorMessageConstants.PERMISSION_DENIED -> response.setStatus(HttpStatus.FORBIDDEN.value());
-                    case ErrorMessageConstants.INVALID_EXPENSE_CATEGORY_KEY ->
-                            response.setStatus(HttpStatus.BAD_REQUEST.value());
-                    case ErrorMessageConstants.NO_CATEGORY_FOUND_ERROR ->
-                            response.setStatus(HttpStatus.NO_CONTENT.value());
-                }
-            } else {
-                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            }
-
-            response.setMessage(e.getMessage());
-
-            log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, e.getMessage()));
+            MymUtil.setAppropriateResponseStatus(response, ex);
+            log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, ex.getMessage()));
         }
 
         return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
@@ -105,17 +90,12 @@ public class ExpenseCategoryController {
                     .getExpenseCategoriesByUid(thePageable);
 
             response.setStatus(HttpStatus.OK.value());
-            response.setMessage("Success");
+            response.setMessage(Constants.SUCCESS);
             response.setBody(expenseCategories);
 
         } catch (Exception e) {
 
-            if (e instanceof ExpenseCategoryException)
-                response.setStatus(HttpStatus.BAD_REQUEST.value());
-            else
-                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-
-            response.setMessage(String.format(Constants.FAILED_, e.getMessage()));
+            MymUtil.setAppropriateResponseStatus(response, e);
             log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, e.getMessage()));
         }
 
@@ -130,38 +110,24 @@ public class ExpenseCategoryController {
 
         CustomResponse<ExpenseCategoryResponse> response = new CustomResponse<>();
 
-        if (expenseCategoryRequest.isValid(RequestAction.ADD)) {
+        try {
 
-            try {
-
-                ExpenseCategoryResponse expenseCategory = expenseCategoryService.createExpenseCategory(expenseCategoryRequest);
-
-                response.setStatus(HttpStatus.CREATED.value());
-                response.setMessage(Constants.SUCCESS);
-                response.setBody(expenseCategory);
-
-                log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, "Category created successfully with key : " + expenseCategory.getKey()));
-
-            } catch (Exception e) {
-
-                if (e instanceof ExpenseCategoryException) {
-
-                    if (e.getMessage().contains(ErrorMessageConstants.CATEGORY_NAME_ALREADY_PRESENT_ERROR))
-                        response.setStatus(HttpStatus.CONFLICT.value());
-                    else
-                        response.setStatus(HttpStatus.BAD_REQUEST.value());
-                } else {
-
-                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                }
-
-                response.setMessage(String.format(Constants.FAILED_, e.getMessage()));
-                log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, e.getMessage()));
+            if (!expenseCategoryRequest.isValid(RequestAction.ADD)) {
+                throw new ExpenseCategoryException(ErrorMessageConstants.INVALID_REQUEST_BODY_CREATE);
             }
-        } else {
 
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            response.setMessage(String.format(Constants.FAILED_, String.format(ErrorMessageConstants.INVALID_REQUEST_BODY, "creating")));
+            ExpenseCategoryResponse expenseCategory = expenseCategoryService.createExpenseCategory(expenseCategoryRequest);
+
+            response.setStatus(HttpStatus.CREATED.value());
+            response.setMessage(Constants.SUCCESS);
+            response.setBody(expenseCategory);
+
+            log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, "Category created successfully with key : " + expenseCategory.getKey()));
+
+        } catch (Exception e) {
+
+            MymUtil.setAppropriateResponseStatus(response, e);
+            log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, e.getMessage()));
         }
 
         return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
@@ -175,39 +141,25 @@ public class ExpenseCategoryController {
 
         CustomResponse<ExpenseCategoryResponse> response = new CustomResponse<>();
 
-        if (expenseCategoryRequest.isValid(RequestAction.UPDATE)) {
+        try {
 
-            try {
-
-                ExpenseCategoryResponse expenseCategory = expenseCategoryService.updateExpenseCategory(expenseCategoryRequest);
-
-                response.setStatus(HttpStatus.OK.value());
-                response.setMessage(Constants.SUCCESS);
-                response.setBody(expenseCategory);
-
-                log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, "Category with key : " + expenseCategory.getKey() + " updated successfully"));
-
-            } catch (Exception e) {
-
-                if (e instanceof ExpenseCategoryException) {
-
-                    if (e.getMessage().contains(ErrorMessageConstants.CATEGORY_NAME_ALREADY_PRESENT_ERROR))
-                        response.setStatus(HttpStatus.CONFLICT.value());
-                    else
-                        response.setStatus(HttpStatus.BAD_REQUEST.value());
-
-                    log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, e.getMessage()));
-                } else {
-
-                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                }
-
-                response.setMessage(String.format(Constants.FAILED_, e.getMessage()));
+            if (!expenseCategoryRequest.isValid(RequestAction.UPDATE)) {
+                throw new ExpenseCategoryException(ErrorMessageConstants.INVALID_REQUEST_BODY_UPDATE);
             }
-        } else {
 
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            response.setMessage(String.format(Constants.FAILED_, String.format(ErrorMessageConstants.INVALID_REQUEST_BODY, "updating")));
+            ExpenseCategoryResponse expenseCategory = expenseCategoryService.updateExpenseCategory(expenseCategoryRequest);
+
+            response.setStatus(HttpStatus.OK.value());
+            response.setMessage(Constants.SUCCESS);
+            response.setBody(expenseCategory);
+
+            log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, "Category with key : " + expenseCategory.getKey() + " updated successfully"));
+
+        } catch (Exception e) {
+
+            MymUtil.setAppropriateResponseStatus(response, e);
+            log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, e.getMessage()));
+
         }
 
         return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
@@ -222,7 +174,7 @@ public class ExpenseCategoryController {
         CustomResponse<String> response = new CustomResponse<>();
 
         try {
-            if (!MymStringUtil.isValid(key)) {
+            if (!MymUtil.isValid(key)) {
                 throw new ExpenseCategoryException(ErrorMessageConstants.INVALID_EXPENSE_CATEGORY_KEY);
             }
 
@@ -232,21 +184,7 @@ public class ExpenseCategoryController {
             log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, "Category with key " + key + " deleted successfully"));
         } catch (Exception e) {
 
-            if (e instanceof ExpenseCategoryException) {
-
-                switch (e.getMessage()) {
-
-                    case ErrorMessageConstants.PERMISSION_DENIED -> response.setStatus(HttpStatus.FORBIDDEN.value());
-                    case ErrorMessageConstants.INVALID_EXPENSE_CATEGORY_KEY ->
-                            response.setStatus(HttpStatus.BAD_REQUEST.value());
-                    case ErrorMessageConstants.NO_CATEGORY_FOUND_ERROR ->
-                            response.setStatus(HttpStatus.NO_CONTENT.value());
-                }
-            } else {
-                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            }
-
-            response.setMessage(e.getMessage());
+            MymUtil.setAppropriateResponseStatus(response, e);
             log.info(String.format(Constants.LOG_MESSAGE_STRUCTURE, correlationId, e.getMessage()));
         }
 
