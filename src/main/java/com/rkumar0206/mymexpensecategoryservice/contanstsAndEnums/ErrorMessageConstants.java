@@ -13,4 +13,6 @@ public class ErrorMessageConstants {
     public static final String MAX_PAGE_SIZE_ERROR = "Max page size should be less than or equal to %s";
 
     public static final String USER_INFO_NOT_PROPER = "User information provided is not proper";
+    public static final String NO_CORRELATION_ID_PASSED = "Header " + Headers.CORRELATION_ID + " no passed.";
+
 }

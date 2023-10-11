@@ -64,6 +64,7 @@ public class ExpenseCategoryController {
         return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
     }
 
+    // get all user expenses
     @GetMapping
     public ResponseEntity<CustomResponse<Page<ExpenseCategory>>> getAllExpenseCategory(
             @RequestHeader(Headers.CORRELATION_ID) String correlationId,
@@ -85,9 +86,7 @@ public class ExpenseCategoryController {
             if (thePageable.getPageSize() > maxPageSizeAllowed)
                 throw new ExpenseCategoryException(String.format(ErrorMessageConstants.MAX_PAGE_SIZE_ERROR, maxPageSizeAllowed));
 
-
-            Page<ExpenseCategory> expenseCategories = expenseCategoryService
-                    .getExpenseCategoriesByUid(thePageable);
+            Page<ExpenseCategory> expenseCategories = expenseCategoryService.getExpenseCategoriesByUid(thePageable);
 
             response.setStatus(HttpStatus.OK.value());
             response.setMessage(Constants.SUCCESS);
