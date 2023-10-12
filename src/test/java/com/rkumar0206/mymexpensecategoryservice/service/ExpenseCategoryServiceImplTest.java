@@ -3,6 +3,7 @@ package com.rkumar0206.mymexpensecategoryservice.service;
 import com.rkumar0206.mymexpensecategoryservice.contanstsAndEnums.ErrorMessageConstants;
 import com.rkumar0206.mymexpensecategoryservice.domain.ExpenseCategory;
 import com.rkumar0206.mymexpensecategoryservice.exceptions.ExpenseCategoryException;
+import com.rkumar0206.mymexpensecategoryservice.feignClient.ExpenseServiceAPI;
 import com.rkumar0206.mymexpensecategoryservice.model.UserInfo;
 import com.rkumar0206.mymexpensecategoryservice.model.request.ExpenseCategoryRequest;
 import com.rkumar0206.mymexpensecategoryservice.model.response.ExpenseCategoryResponse;
@@ -37,6 +38,8 @@ class ExpenseCategoryServiceImplTest {
     private ExpenseCategoryRepository expenseCategoryRepository;
     @Mock
     private UserContextService userContextService;
+    @Mock
+    private ExpenseServiceAPI expenseServiceAPI;
 
     private ExpenseCategoryServiceImpl expenseCategoryService;
 
@@ -72,7 +75,7 @@ class ExpenseCategoryServiceImplTest {
 
         when(userContextService.getUserInfo()).thenReturn(userInfo);
 
-        expenseCategoryService = new ExpenseCategoryServiceImpl(expenseCategoryRepository, userContextService);
+        expenseCategoryService = new ExpenseCategoryServiceImpl(expenseCategoryRepository, userContextService, expenseServiceAPI);
     }
 
     @Test

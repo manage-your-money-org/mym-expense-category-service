@@ -3,6 +3,7 @@ package com.rkumar0206.mymexpensecategoryservice.service;
 import com.rkumar0206.mymexpensecategoryservice.contanstsAndEnums.ErrorMessageConstants;
 import com.rkumar0206.mymexpensecategoryservice.domain.ExpenseCategory;
 import com.rkumar0206.mymexpensecategoryservice.exceptions.ExpenseCategoryException;
+import com.rkumar0206.mymexpensecategoryservice.feignClient.ExpenseServiceAPI;
 import com.rkumar0206.mymexpensecategoryservice.model.UserInfo;
 import com.rkumar0206.mymexpensecategoryservice.model.request.ExpenseCategoryRequest;
 import com.rkumar0206.mymexpensecategoryservice.model.response.ExpenseCategoryResponse;
@@ -24,6 +25,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
     private final ExpenseCategoryRepository expenseCategoryRepository;
     private final UserContextService userContextService;
+    private final ExpenseServiceAPI expenseServiceAPI;
 
     @Override
     public Page<ExpenseCategory> getExpenseCategoriesByUid(Pageable pageable) {
@@ -110,6 +112,12 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
         if (!expenseCategoryInDBByRequest.getUid().equals(uid))
             throw new ExpenseCategoryException(ErrorMessageConstants.PERMISSION_DENIED);
+
+        //todo: use rabbitMq for this in future
+        expenseServiceAPI.deleteExpenseByCategoryKey(
+                userContextService.getCorrelationId(), userContextService.getUserInfoHeaderValue(),
+                userContextService.getAuthorizationToken(), key
+        );
 
         expenseCategoryRepository.delete(expenseCategoryInDBByRequest);
     }
