@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ExpenseServiceAPI {
 
     @DeleteMapping("/mym/api/expenses/categoryKey")
-    public ResponseEntity<CustomResponse<String>> deleteExpenseByCategoryKey(
+    ResponseEntity<CustomResponse<String>> deleteExpenseByCategoryKey(
             @RequestHeader(Headers.CORRELATION_ID) String correlationId,
             @RequestHeader(Headers.USER_INFO_HEADER_NAME) String userInfo,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
