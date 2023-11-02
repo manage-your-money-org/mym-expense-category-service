@@ -25,3 +25,11 @@ server:
 pagination:
   maxPageSizeAllowed: 200
   defaultPageSize: 50
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - "*"
+      base-path: "/mym/${spring.application.name}/actuator"
